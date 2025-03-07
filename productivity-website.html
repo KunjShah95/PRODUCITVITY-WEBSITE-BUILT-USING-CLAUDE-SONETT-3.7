@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Breathe - Smart Productivity</title>
+    <style>
+      :root {
+        --primary: #3a86ff;
+        --primary-light: #8bb8ff;
+        --secondary: #ff006e;
+        --dark: #1e1e24;
+        --light: #f8f9fa;
+        --success: #38b000;
+        --warning: #ffbe0b;
+        --danger: #ff5400;
+        --gray-100: #f8f9fa;
+        --gray-200: #e9ecef;
+        --gray-300: #dee2e6;
+        --gray-400: #ced4da;
+        --gray-500: #adb5bd;
+        --gray-600: #6c757d;
+        --gray-700: #495057;
+        --gray-800: #343a40;
+        --gray-900: #212529;
+
+        /* Light Mode Variables (Default) */
+        --bg-primary: var(--light);
+        --bg-secondary: white;
+        --text-primary: var(--dark);
+        --text-secondary: var(--gray-700);
+        --border-color: var(--gray-200);
+        --shadow-color: rgba(0, 0, 0, 0.05);
+      }
+
+      /* Dark Mode Variables */
+      :root[data-theme="dark"] {
+        --primary: #60a5fa;
+        --primary-light: #3b82f6;
+        --bg-primary: #121212;
+        --bg-secondary: #1e1e24;
+        --text-primary: #f8f9fa;
+        --text-secondary: #adb5bd;
+        --border-color: #2d2d39;
+        --shadow-color: rgba(0, 0, 0, 0.2);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+          sans-serif;
+      }
+
+      body {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        transition: all 0.3s ease;
+      }
+
+      header {
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: var(--bg-secondary);
+        box-shadow: 0 4px 6px var(--shadow-color);
+      }
+
+      .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      nav ul {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+      }
+
+      nav a {
+        text-decoration: none;
+        color: var(--text-secondary);
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      nav a:hover {
+        color: var(--primary);
+      }
+
+      .theme-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-secondary);
+        font-size: 1.2rem;
+        margin-left: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+      }
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--primary-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+      }
+
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .dashboard {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        gap: 2rem;
+      }
+
+      .card {
+        background-color: var(--bg-secondary);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px var(--shadow-color);
+        margin-bottom: 1.5rem;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.2rem;
+      }
+
+      .card-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--gray-800);
+      }
+
+      .btn {
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
+        border: none;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: #2a75e6;
+      }
+
+      .btn-outline {
+        background-color: transparent;
+        border: 1px solid var(--gray-400);
+        color: var(--gray-700);
+      }
+
+      .btn-outline:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .task-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .task-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-radius: 8px;
+        background-color: var(--bg-primary);
+        gap: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .task-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      .task-checkbox {
+        appearance: none;
+        width: 22px;
+        height: 22px;
+        border: 2px solid var(--gray-400);
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .task-checkbox:checked {
+        background-color: var(--success);
+        border-color: var(--success);
+      }
+
+      .task-checkbox:checked::after {
+        content: "✓";
+        color: white;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .task-content {
+        flex-grow: 1;
+      }
+
+      .task-title {
+        font-weight: 500;
+        margin-bottom: 0.2rem;
+      }
+
+      .task-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: var(--gray-600);
+      }
+
+      .tag {
+        padding: 0.2rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+
+      .tag-high {
+        background-color: rgba(255, 0, 110, 0.1);
+        color: var(--secondary);
+      }
+
+      .tag-medium {
+        background-color: rgba(255, 190, 11, 0.1);
+        color: var(--warning);
+      }
+
+      .tag-low {
+        background-color: rgba(56, 176, 0, 0.1);
+        color: var(--success);
+      }
+
+      .task-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .icon-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--gray-500);
+        transition: all 0.3s ease;
+      }
+
+      .icon-btn:hover {
+        color: var(--primary);
+      }
+
+      .energy-tracker {
+        background: linear-gradient(
+          to right,
+          var(--primary-light),
+          var(--primary)
+        );
+        color: white;
+        padding: 1.5rem;
+      }
+
+      .meter {
+        height: 10px;
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 5px;
+        margin: 1rem 0;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .meter-fill {
+        position: absolute;
+        height: 100%;
+        background-color: white;
+        border-radius: 5px;
+        width: 75%;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+
+      .stat-card {
+        background-color: white;
+        border-radius: 12px;
+        padding: 1.2rem;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.2rem;
+      }
+
+      .stat-label {
+        font-size: 0.85rem;
+        color: var(--gray-600);
+      }
+
+      .focus-sessions {
+        margin-top: 1.5rem;
+      }
+
+      .session-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid var(--gray-200);
+      }
+
+      .session-time {
+        font-weight: 500;
+      }
+
+      .session-duration {
+        color: var(--gray-600);
+        font-size: 0.9rem;
+      }
+
+      .suggestions-card .card-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .suggestion {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.8rem;
+        padding: 0.8rem;
+        border-radius: 8px;
+        background-color: var(--bg-primary);
+      }
+
+      .suggestion-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background-color: var(--primary-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+      }
+
+      .suggestion-content p {
+        font-size: 0.9rem;
+        color: var(--gray-700);
+      }
+
+      footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--gray-600);
+        font-size: 0.9rem;
+      }
+
+      /* Mobile responsiveness */
+      @media (max-width: 768px) {
+        .dashboard {
+          grid-template-columns: 1fr;
+        }
+
+        nav ul {
+          display: none;
+        }
+      }
+
+      /* Mobile menu toggle */
+      .mobile-menu {
+        display: none;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .mobile-menu.active {
+        display: flex;
+      }
+
+      .menu-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-secondary);
+        font-size: 1.5rem;
+      }
+    </style>
+    <style>
+      @media (max-width: 768px) {
+        .menu-toggle {
+          display: block;
+        }
+
+        nav ul {
+          display: none;
+        }
+
+        nav ul.active {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"
+          ></path>
+          <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+          <line x1="9" y1="9" x2="9.01" y2="9"></line>
+          <line x1="15" y1="9" x2="15.01" y2="9"></line>
+        </svg>
+        Breathe
+      </div>
+      <nav>
+        <ul id="nav-menu">
+          <li><a href="#" class="active">Dashboard</a></li>
+          <li><a href="#">Focus</a></li>
+          <li><a href="#">Insights</a></li>
+          <li><a href="#">Settings</a></li>
+        </ul>
+        <button class="menu-toggle" id="menu-toggle">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </nav>
+      <div class="user-profile">
+        <button class="theme-toggle" id="theme-toggle">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="moon-icon"
+          >
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="sun-icon"
+            style="display: none"
+          >
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+        <div class="user-avatar">A</div>
+      </div>
+    </header>
+
+    <main>
+      <div class="dashboard">
+        <div class="main-content">
+          <div class="card energy-tracker">
+            <div class="card-header">
+              <div class="card-title" style="color: white">Energy Level</div>
+              <span style="color: rgba(255, 255, 255, 0.8)">75%</span>
+            </div>
+            <div class="meter">
+              <div class="meter-fill"></div>
+            </div>
+            <p style="font-size: 0.9rem; opacity: 0.9">
+              You're in a good state to work on focused tasks. Take a break in
+              45 minutes.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">High-Impact Tasks</div>
+              <button class="btn btn-primary" id="add-task-btn">
+                Add Task
+              </button>
+            </div>
+            <div class="task-list">
+              <div class="task-item">
+                <input type="checkbox" class="task-checkbox" />
+                <div class="task-content">
+                  <div class="task-title" contenteditable="true">
+                    Finalize Q1 project proposal
+                  </div>
+                  <div class="task-meta">
+                    <span class="tag tag-high">High Impact</span>
+                    <span>2 hours</span>
+                  </div>
+                </div>
+                <div class="task-actions">
+                  <button class="icon-btn">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M12 20h9"></path>
+                      <path
+                        d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="task-item">
+                <input type="checkbox" class="task-checkbox" />
+                <div class="task-content">
+                  <div class="task-title" contenteditable="true">
+                    Review competitor analysis
+                  </div>
+                  <div class="task-meta">
+                    <span class="tag tag-medium">Medium Impact</span>
+                    <span>1 hour</span>
+                  </div>
+                </div>
+                <div class="task-actions">
+                  <button class="icon-btn">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M12 20h9"></path>
+                      <path
+                        d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="task-item">
+                <input type="checkbox" class="task-checkbox" />
+                <div class="task-content">
+                  <div class="task-title" contenteditable="true">
+                    Prepare for strategy meeting
+                  </div>
+                  <div class="task-meta">
+                    <span class="tag tag-high">High Impact</span>
+                    <span>1.5 hours</span>
+                  </div>
+                </div>
+                <div class="task-actions">
+                  <button class="icon-btn">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M12 20h9"></path>
+                      <path
+                        d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="task-item">
+                <input type="checkbox" class="task-checkbox" />
+                <div class="task-content">
+                  <div class="task-title" contenteditable="true">
+                    Answer important emails
+                  </div>
+                  <div class="task-meta">
+                    <span class="tag tag-low">Low Impact</span>
+                    <span>30 minutes</span>
+                  </div>
+                </div>
+                <div class="task-actions">
+                  <button class="icon-btn">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M12 20h9"></path>
+                      <path
+                        d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card suggestions-card">
+            <div class="card-header">
+              <div class="card-title">Smart Suggestions</div>
+            </div>
+            <div class="card-content suggestions-card">
+              <div class="suggestion">
+                <div class="suggestion-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
+                    ></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                  </svg>
+                </div>
+                <div class="suggestion-content">
+                  <p>
+                    Your focus peaks between 9-11 AM. Schedule high-impact tasks
+                    during this time.
+                  </p>
+                </div>
+              </div>
+
+              <div class="suggestion">
+                <div
+                  class="suggestion-icon"
+                  style="background-color: var(--warning)"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 8v4"></path>
+                    <path d="M12 16h.01"></path>
+                  </svg>
+                </div>
+                <div class="suggestion-content">
+                  <p>
+                    You've been working for 2 hours straight. Consider taking a
+                    10-minute break.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Today's Stats</div>
+            </div>
+            <div class="stats">
+              <div class="stat-card">
+                <div class="stat-value" style="color: var(--success)">3</div>
+                <div class="stat-label">Tasks Completed</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" style="color: var(--primary)">2.5h</div>
+                <div class="stat-label">Deep Focus</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Focus Sessions</div>
+            </div>
+            <div class="focus-sessions">
+              <div class="session-item">
+                <div class="session-time">9:00 - 10:30 AM</div>
+                <div class="session-duration">1h 30m</div>
+              </div>
+              <div class="session-item">
+                <div class="session-time">1:15 - 2:15 PM</div>
+                <div class="session-duration">1h</div>
+              </div>
+              <div class="session-item">
+                <div class="session-time">Scheduled</div>
+                <div class="session-duration">3:30 PM</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Stress Monitor</div>
+            </div>
+            <div style="text-align: center; padding: 1rem 0">
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="54"
+                  fill="none"
+                  stroke="#e9ecef"
+                  stroke-width="12"
+                />
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="54"
+                  fill="none"
+                  stroke="#3a86ff"
+                  stroke-width="12"
+                  stroke-dasharray="339.2"
+                  stroke-dashoffset="100"
+                />
+                <text
+                  x="60"
+                  y="65"
+                  font-size="20"
+                  text-anchor="middle"
+                  fill="#343a40"
+                >
+                  Low
+                </text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // Theme toggle functionality
+      const themeToggle = document.getElementById("theme-toggle");
+      const moonIcon = document.querySelector(".moon-icon");
+      const sunIcon = document.querySelector(".sun-icon");
+
+      // Check for saved theme preference or prefer-color-scheme
+      const savedTheme = localStorage.getItem("theme");
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+
+      // Set initial theme
+      if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+        document.documentElement.setAttribute("data-theme", "dark");
+        moonIcon.style.display = "none";
+        sunIcon.style.display = "block";
+      }
+
+      // Toggle theme
+      themeToggle.addEventListener("click", () => {
+        const currentTheme =
+          document.documentElement.getAttribute("data-theme");
+        if (currentTheme === "dark") {
+          document.documentElement.removeAttribute("data-theme");
+          localStorage.setItem("theme", "light");
+          moonIcon.style.display = "block";
+          sunIcon.style.display = "none";
+        } else {
+          document.documentElement.setAttribute("data-theme", "dark");
+          localStorage.setItem("theme", "dark");
+          moonIcon.style.display = "none";
+          sunIcon.style.display = "block";
+        }
+      });
+
+      // Menu toggle functionality
+      const menuToggle = document.getElementById("menu-toggle");
+      const navMenu = document.getElementById("nav-menu");
+
+      if (menuToggle && navMenu) {
+        menuToggle.addEventListener("click", () => {
+          navMenu.classList.toggle("active");
+        });
+      }
+
+      // Profile button functionality
+      const userProfile = document.querySelector(".user-profile");
+      userProfile.addEventListener("click", () => {
+        alert("Profile button clicked!");
+      });
+
+      // Add task functionality
+      const addTaskBtn = document.getElementById("add-task-btn");
+      const taskList = document.querySelector(".task-list");
+
+      addTaskBtn.addEventListener("click", () => {
+        const newTask = document.createElement("div");
+        newTask.classList.add("task-item");
+        newTask.innerHTML = `
+                <input type="checkbox" class="task-checkbox">
+                <div class="task-content">
+                    <div class="task-title" contenteditable="true">New Task</div>
+                    <div class="task-meta">
+                        <span class="tag tag-low">Low Impact</span>
+                        <span>30 minutes</span>
+                    </div>
+                </div>
+                <div class="task-actions">
+                    <button class="icon-btn delete-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+        taskList.prepend(newTask);
+
+        // Focus on the new task title for immediate editing
+        setTimeout(() => {
+          newTask.querySelector(".task-title").focus();
+        }, 0);
+
+        // Add event listeners to new task elements
+        const newCheckbox = newTask.querySelector(".task-checkbox");
+        const newDeleteBtn = newTask.querySelector(".icon-btn");
+
+        newCheckbox.addEventListener("change", () => {
+          if (newCheckbox.checked) {
+            newTask.style.opacity = "0.6";
+            newTask.querySelector(".task-title").style.textDecoration =
+              "line-through";
+            // Move completed tasks to bottom
+            taskList.appendChild(newTask);
+          } else {
+            newTask.style.opacity = "1";
+            newTask.querySelector(".task-title").style.textDecoration = "none";
+          }
+        });
+
+        newDeleteBtn.addEventListener("click", () => {
+          newTask.style.height = "0";
+          newTask.style.opacity = "0";
+          newTask.style.margin = "0";
+          newTask.style.padding = "0";
+          newTask.style.transition = "all 0.3s ease";
+          setTimeout(() => {
+            taskList.removeChild(newTask);
+          }, 300);
+        });
+      });
+
+      // Add event listeners to existing task checkboxes and delete buttons
+      document.querySelectorAll(".task-item").forEach((task) => {
+        const checkbox = task.querySelector(".task-checkbox");
+        const deleteBtn = task.querySelector(".icon-btn");
+
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) {
+            task.style.opacity = "0.6";
+            task.querySelector(".task-title").style.textDecoration =
+              "line-through";
+            taskList.appendChild(task);
+          } else {
+            task.style.opacity = "1";
+            task.querySelector(".task-title").style.textDecoration = "none";
+          }
+        });
+
+        deleteBtn.addEventListener("click", () => {
+          task.style.height = "0";
+          task.style.opacity = "0";
+          task.style.margin = "0";
+          task.style.padding = "0";
+          task.style.transition = "all 0.3s ease";
+          setTimeout(() => {
+            taskList.removeChild(task);
+          }, 300);
+        });
+      });
+    </script>
+
+    <footer>
+      <p>© 2023 Breathe - Smart Productivity App</p>
+    </footer>
+  </body>
+</html>
